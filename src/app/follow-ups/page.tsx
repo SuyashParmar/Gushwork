@@ -135,10 +135,10 @@ export default function FollowUpsPage() {
   };
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Follow-Ups Queue</h1>
-        <p className="text-slate-500 mt-2 text-lg">Your operational queue for today's active leads and pending quotes.</p>
+    <div className="p-4 md:p-8 max-w-5xl mx-auto">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Follow-Ups Queue</h1>
+        <p className="text-sm md:text-lg text-slate-500 mt-1 md:mt-2">Your operational queue for today's active leads and pending quotes.</p>
       </div>
       
       {renderSection('Overdue', 'OVERDUE', 'border-l-red-500')}

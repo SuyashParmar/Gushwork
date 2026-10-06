@@ -94,14 +94,14 @@ export default function JobsPipelinePage() {
   }
 
   return (
-    <div className="p-8 h-full flex flex-col">
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-4 md:p-8 h-full flex flex-col">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Jobs Pipeline</h1>
-          <p className="text-slate-500 mt-1">Manage active leads and scheduled work.</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Jobs Pipeline</h1>
+          <p className="text-sm md:text-base text-slate-500 mt-1">Manage active leads and scheduled work.</p>
         </div>
-        <Link href="/jobs/new">
-          <Button className="bg-blue-600 hover:bg-blue-700">Add New Job</Button>
+        <Link href="/jobs/new" className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700">Add New Job</Button>
         </Link>
       </div>
 

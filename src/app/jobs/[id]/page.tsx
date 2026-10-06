@@ -156,7 +156,7 @@ export default function JobDetailPage() {
                 <h4 className="text-sm font-medium text-slate-500 mb-1">Issue Description</h4>
                 <p className="text-slate-900">{job.issueDescription}</p>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <h4 className="text-sm font-medium text-slate-500 mb-1">Estimated Value</h4>
                   <p className="text-slate-900">{job.estimatedValue ? `$${job.estimatedValue.toLocaleString()}` : 'Not estimated'}</p>

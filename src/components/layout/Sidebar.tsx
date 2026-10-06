@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Users, Briefcase, ListTodo, BrainCircuit } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export function Sidebar() {
+export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   const routes = [
@@ -17,7 +17,7 @@ export function Sidebar() {
   ];
 
   return (
-    <div className="flex h-screen w-64 flex-col border-r bg-white">
+    <div className="flex h-full flex-col bg-white">
       <div className="flex h-16 items-center px-6 border-b">
         <div className="flex items-center gap-2">
           <div className="bg-blue-600 rounded-md p-1.5">
@@ -33,6 +33,7 @@ export function Sidebar() {
             <Link
               key={route.path}
               href={route.path}
+              onClick={onNavigate}
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
                 pathname === route.path 
@@ -48,6 +49,14 @@ export function Sidebar() {
       </div>
 
 
+    </div>
+  );
+}
+
+export function Sidebar() {
+  return (
+    <div className="hidden md:flex h-screen w-64 flex-col border-r bg-white shrink-0">
+      <SidebarContent />
     </div>
   );
 }

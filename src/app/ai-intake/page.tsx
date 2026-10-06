@@ -71,12 +71,12 @@ export default function AIIntakePage() {
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-8">
+    <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
-          <BrainCircuit className="h-8 w-8 text-blue-600" /> AI Lead Intake
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
+          <BrainCircuit className="h-6 w-6 md:h-8 md:w-8 text-blue-600" /> AI Lead Intake
         </h1>
-        <p className="text-slate-500 mt-2 text-lg">Turn a messy call, text, or email into a structured job in seconds.</p>
+        <p className="text-sm md:text-lg text-slate-500 mt-1 md:mt-2">Turn a messy call, text, or email into a structured job in seconds.</p>
       </div>
 
       {!extractedData ? (

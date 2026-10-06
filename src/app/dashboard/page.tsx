@@ -91,14 +91,14 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
-      <div className="flex justify-between items-start">
+    <div className="p-4 md:p-8 space-y-6 md:space-y-8 max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">{getGreeting()}, Denise 👋</h1>
-          <p className="text-slate-500 mt-2">Here's what needs your attention today.</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">{getGreeting()}, Denise 👋</h1>
+          <p className="text-sm md:text-base text-slate-500 mt-1 md:mt-2">Here's what needs your attention today.</p>
         </div>
-        <Link href="/jobs/new">
-          <Button className="bg-blue-600 hover:bg-blue-700">Add New Job</Button>
+        <Link href="/jobs/new" className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700">Add New Job</Button>
         </Link>
       </div>
 
