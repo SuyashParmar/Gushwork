@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, Briefcase, ListTodo, BrainCircuit, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, Briefcase, ListTodo, BrainCircuit } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function Sidebar() {
