@@ -47,15 +47,7 @@ export function Sidebar() {
         </nav>
       </div>
 
-      <div className="border-t p-4">
-        <Link
-          href="/settings"
-          className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
-        >
-          <Settings className="h-5 w-5" />
-          Settings
-        </Link>
-      </div>
+
     </div>
   );
 }
