@@ -13,6 +13,9 @@ export default function CustomersPage() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    if (q) setSearch(q);
     fetchCustomers();
   }, []);
 

@@ -1,19 +1,34 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Bell, Search, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export function Topbar() {
+  const [query, setQuery] = useState('');
+  const router = useRouter();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      router.push(`/customers?q=${encodeURIComponent(query)}`);
+    }
+  };
   return (
     <header className="flex h-16 items-center justify-between border-b bg-white px-6">
       <div className="flex items-center gap-4 flex-1">
-        <div className="relative w-96 max-w-full">
+        <form onSubmit={handleSearch} className="relative w-96 max-w-full">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
           <Input 
             type="search" 
-            placeholder="Search customers, jobs, or phone numbers..." 
+            placeholder="Search customers..." 
             className="pl-9 bg-slate-50 border-slate-200"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
           />
-        </div>
+        </form>
       </div>
       
       <div className="flex items-center gap-4">
