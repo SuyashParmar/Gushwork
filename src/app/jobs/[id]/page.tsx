@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { MarkContactedDialog } from '@/components/jobs/MarkContactedDialog';
 import { ScheduleDialog } from '@/components/jobs/ScheduleDialog';
+import { JobProgressChain } from '@/components/jobs/JobProgressChain';
 import { User, Phone, Mail, History } from 'lucide-react';
 
 export default function JobDetailPage() {
@@ -130,6 +131,8 @@ export default function JobDetailPage() {
         </div>
       </div>
 
+      <JobProgressChain job={job} />
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-6">
           <Card>
@@ -182,24 +185,6 @@ export default function JobDetailPage() {
                   <div>
                     <h4 className="text-sm font-medium text-slate-500 mb-1">Scheduled Time</h4>
                     <p className="text-slate-900 font-medium text-blue-700">{format(new Date(job.scheduledAt), 'MMM d, yyyy h:mm a')}</p>
-                  </div>
-                )}
-                {job.quoteSentAt && (
-                  <div>
-                    <h4 className="text-sm font-medium text-slate-500 mb-1">Quote Sent On</h4>
-                    <p className="text-slate-900">{format(new Date(job.quoteSentAt), 'MMM d, yyyy h:mm a')}</p>
-                  </div>
-                )}
-                {job.approvedAt && (
-                  <div>
-                    <h4 className="text-sm font-medium text-slate-500 mb-1">Approved On</h4>
-                    <p className="text-slate-900">{format(new Date(job.approvedAt), 'MMM d, yyyy h:mm a')}</p>
-                  </div>
-                )}
-                {job.completedAt && (
-                  <div>
-                    <h4 className="text-sm font-medium text-slate-500 mb-1">Completed On</h4>
-                    <p className="text-slate-900 font-medium text-emerald-700">{format(new Date(job.completedAt), 'MMM d, yyyy h:mm a')}</p>
                   </div>
                 )}
               </div>
