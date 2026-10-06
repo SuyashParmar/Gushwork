@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import mongoose from 'mongoose';
 
 // Import all models to ensure they are registered in serverless functions
 import '@/models/Customer';
