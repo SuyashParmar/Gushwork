@@ -24,6 +24,10 @@ export default function JobDetailPage() {
   const [loading, setLoading] = useState(true);
   
   const [contactDialogOpen, setContactDialogOpen] = useState(showContactDialogInit);
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+  const [scheduleTime, setScheduleTime] = useState('');
+  const [techName, setTechName] = useState('');
+  const [techPhone, setTechPhone] = useState('');
 
   useEffect(() => {
     fetchJobDetails();
@@ -51,6 +55,10 @@ export default function JobDetailPage() {
   };
 
   async function updateStatus(newStatus: string) {
+    if (newStatus === 'SCHEDULED') {
+      setScheduleDialogOpen(true);
+      return;
+    }
     try {
       const res = await fetch(`/api/jobs/${id}`, {
         method: 'PUT',
@@ -64,6 +72,36 @@ export default function JobDetailPage() {
       }
     } catch (error) {
       toast.error('Failed to update status');
+    }
+  }
+
+  async function handleSchedule() {
+    if (!scheduleTime || !techName) {
+      toast.error('Please provide a time and a technician name');
+      return;
+    }
+    
+    try {
+      const res = await fetch(`/api/jobs/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          status: 'SCHEDULED',
+          scheduledAt: new Date(scheduleTime).toISOString(),
+          assignedTechnician: techName,
+          assignedTechnicianPhone: techPhone || undefined
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Job scheduled successfully');
+        setScheduleDialogOpen(false);
+        fetchJobDetails();
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to schedule job');
     }
   }
 
@@ -164,6 +202,20 @@ export default function JobDetailPage() {
                   <h4 className="text-sm font-medium text-slate-500 mb-1">Assigned Technician</h4>
                   <p className="text-slate-900">{job.assignedTechnician || 'Unassigned'}</p>
                 </div>
+                {job.assignedTechnicianPhone && (
+                  <div>
+                    <h4 className="text-sm font-medium text-slate-500 mb-1">Technician Phone</h4>
+                    <p className="text-slate-900">
+                      <a href={`tel:${job.assignedTechnicianPhone}`} className="text-blue-600 hover:underline">{job.assignedTechnicianPhone}</a>
+                    </p>
+                  </div>
+                )}
+                {job.status === 'SCHEDULED' && job.scheduledAt && (
+                  <div>
+                    <h4 className="text-sm font-medium text-slate-500 mb-1">Scheduled Time</h4>
+                    <p className="text-slate-900 font-medium text-blue-700">{format(new Date(job.scheduledAt), 'MMM d, yyyy h:mm a')}</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -250,6 +302,47 @@ export default function JobDetailPage() {
         onClose={() => setContactDialogOpen(false)} 
         onSuccess={handleContactSuccess}
       />
+
+      <Dialog open={scheduleDialogOpen} onOpenChange={setScheduleDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Schedule Job</DialogTitle>
+            <DialogDescription>
+              Book a time and assign a technician for this repair.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Scheduled Date & Time *</label>
+              <Input 
+                type="datetime-local" 
+                value={scheduleTime}
+                onChange={(e) => setScheduleTime(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Technician Name *</label>
+              <Input 
+                placeholder="e.g. Alex" 
+                value={techName}
+                onChange={(e) => setTechName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Technician Phone Number</label>
+              <Input 
+                placeholder="e.g. 555-1234" 
+                value={techPhone}
+                onChange={(e) => setTechPhone(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setScheduleDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSchedule} className="bg-blue-600 hover:bg-blue-700">Confirm Schedule</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

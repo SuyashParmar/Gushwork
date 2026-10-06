@@ -13,6 +13,7 @@ export interface IJob extends Document {
   urgency: 'LOW' | 'MEDIUM' | 'HIGH' | 'EMERGENCY';
   estimatedValue?: number;
   assignedTechnician?: string;
+  assignedTechnicianPhone?: string;
   lastContactedAt?: Date;
   nextFollowUpAt?: Date;
   nextAction?: string;
@@ -54,6 +55,7 @@ const JobSchema: Schema = new Schema(
     },
     estimatedValue: { type: Number },
     assignedTechnician: { type: String },
+    assignedTechnicianPhone: { type: String },
     lastContactedAt: { type: Date },
     nextFollowUpAt: { type: Date },
     nextAction: { type: String },
