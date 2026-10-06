@@ -156,7 +156,7 @@ export async function transitionJobStatus(job: IJob, newStatus: string, now: Dat
   await job.save();
 
   await createActivity(
-    job._id as string,
+    job._id.toString(),
     'STATUS_CHANGED',
     `Status changed from ${oldStatus} to ${newStatus}`
   );

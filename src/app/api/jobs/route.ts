@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     ensureActiveJobHasFollowUp(newJob, new Date(), body.suggestedFollowUp);
     await newJob.save();
 
-    await createActivity(newJob._id as string, 'JOB_CREATED', 'New job created');
+    await createActivity(newJob._id.toString(), 'JOB_CREATED', 'New job created');
     
     return NextResponse.json({ success: true, data: newJob });
   } catch (error: any) {

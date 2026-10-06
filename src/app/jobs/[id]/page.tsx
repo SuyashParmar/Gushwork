@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { MarkContactedDialog } from '@/components/jobs/MarkContactedDialog';
+import { User, Phone, Mail, History } from 'lucide-react';
 
 export default function JobDetailPage() {
   const params = useParams();

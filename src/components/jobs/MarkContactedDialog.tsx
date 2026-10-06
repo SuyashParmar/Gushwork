@@ -82,7 +82,7 @@ export function MarkContactedDialog({ jobId, isOpen, onClose, onSuccess }: MarkC
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="space-y-2">
             <Label>Contact Method</Label>
-            <Select value={method} onValueChange={setMethod}>
+            <Select value={method} onValueChange={(v) => setMethod(v || 'Call')}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="Call">Call</SelectItem>
@@ -101,7 +101,7 @@ export function MarkContactedDialog({ jobId, isOpen, onClose, onSuccess }: MarkC
           </div>
           <div className="space-y-2">
             <Label>Next Follow-up</Label>
-            <Select value={nextFollowUp} onValueChange={setNextFollowUp}>
+            <Select value={nextFollowUp} onValueChange={(v) => setNextFollowUp(v || 'tomorrow')}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="tomorrow">Tomorrow</SelectItem>
