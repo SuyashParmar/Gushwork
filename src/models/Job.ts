@@ -15,6 +15,7 @@ export interface IJob extends Document {
   assignedTechnician?: string;
   lastContactedAt?: Date;
   nextFollowUpAt?: Date;
+  nextAction?: string;
   quoteSentAt?: Date;
   approvedAt?: Date;
   scheduledAt?: Date;
@@ -55,6 +56,7 @@ const JobSchema: Schema = new Schema(
     assignedTechnician: { type: String },
     lastContactedAt: { type: Date },
     nextFollowUpAt: { type: Date },
+    nextAction: { type: String },
     quoteSentAt: { type: Date },
     approvedAt: { type: Date },
     scheduledAt: { type: Date },

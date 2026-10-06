@@ -24,6 +24,7 @@ const jobSchema = z.object({
   urgency: z.string().optional().default('MEDIUM'),
   estimatedValue: z.number().optional(),
   status: z.string().optional().default('NEW'),
+  suggestedFollowUp: z.string().optional(),
 });
 
 export default function NewJobPage() {
@@ -42,6 +43,7 @@ export default function NewJobPage() {
       source: 'MANUAL',
       urgency: 'MEDIUM',
       status: 'NEW',
+      suggestedFollowUp: undefined,
     },
   });
 
@@ -157,6 +159,32 @@ export default function NewJobPage() {
                       form.setValue('estimatedValue', val ? parseFloat(val) : undefined);
                     }} 
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label>Initial Status</Label>
+                  <Select onValueChange={v => form.setValue('status', (v as string) || 'NEW')} defaultValue={form.getValues('status')}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="NEW">New Lead</SelectItem>
+                      <SelectItem value="NEEDS_QUOTE">Needs Quote</SelectItem>
+                      <SelectItem value="QUOTE_SENT">Quote Sent</SelectItem>
+                      <SelectItem value="WAITING_ON_CUSTOMER">Waiting on Customer</SelectItem>
+                      <SelectItem value="APPROVED">Approved</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Next Follow-Up</Label>
+                  <Select onValueChange={v => form.setValue('suggestedFollowUp', (v as string) || undefined)}>
+                    <SelectTrigger><SelectValue placeholder="Auto-calculate" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="today">Today</SelectItem>
+                      <SelectItem value="tomorrow">Tomorrow</SelectItem>
+                      <SelectItem value="2 days">In 2 days</SelectItem>
+                      <SelectItem value="week">In 1 week</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-slate-500">Leave empty to use status defaults</p>
                 </div>
               </div>
             </div>

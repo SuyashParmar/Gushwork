@@ -24,7 +24,7 @@ export async function GET() {
     
     // Sort jobs by priority-like logic to find highest value/priority
     const prioritizedJobs = activeJobs.map(job => {
-      const followUpStatus = getFollowUpStatus(job.nextFollowUpAt);
+      const followUpStatus = getFollowUpStatus(job).status;
       if (followUpStatus === 'TODAY') followUpsToday++;
       if (followUpStatus === 'OVERDUE') overdueFollowUps++;
       

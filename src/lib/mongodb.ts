@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import mongoose from 'mongoose';
 
 // Import all models to ensure they are registered in serverless functions
 import '@/models/Customer';
@@ -31,12 +31,7 @@ async function connectToDatabase() {
     };
 
     if (!MONGODB_URI) {
-      console.log('No MONGODB_URI found. Starting MongoDB Memory Server for demo purposes...');
-      // Start in-memory mongodb
-      const mongod = await MongoMemoryServer.create();
-      MONGODB_URI = mongod.getUri();
-      cached.mongod = mongod;
-      console.log('Started in-memory MongoDB at:', MONGODB_URI);
+      throw new Error('Missing MONGODB_URI. Add your MongoDB Atlas connection string to .env.local.');
     }
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {

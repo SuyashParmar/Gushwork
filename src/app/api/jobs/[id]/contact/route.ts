@@ -14,8 +14,8 @@ export async function POST(
     
     const { contactMethod, notes, nextFollowUp } = body;
     
-    if (!contactMethod || !nextFollowUp) {
-      return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
+    if (!contactMethod) {
+      return NextResponse.json({ success: false, error: 'Missing contact method' }, { status: 400 });
     }
     
     const job = await Job.findById(id);
@@ -24,7 +24,12 @@ export async function POST(
     }
     
     job.lastContactedAt = new Date();
-    job.nextFollowUpAt = new Date(nextFollowUp);
+    
+    if (nextFollowUp === 'none' || !nextFollowUp) {
+      job.nextFollowUpAt = undefined;
+    } else {
+      job.nextFollowUpAt = new Date(nextFollowUp);
+    }
     
     // Add activity
     const activityDesc = notes ? `Contacted via ${contactMethod}. Notes: ${notes}` : `Contacted via ${contactMethod}.`;

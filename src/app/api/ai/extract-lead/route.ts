@@ -18,7 +18,7 @@ const extractedLeadSchema = z.object({
   urgency: z.enum(['LOW', 'MEDIUM', 'HIGH', 'EMERGENCY']).default('MEDIUM'),
   estimatedValue: z.number().optional().nullable(),
   requestedTime: z.string().optional().nullable(),
-  suggestedFollowUp: z.enum(['Today', 'Tomorrow', 'Next Week']).optional().nullable(),
+  suggestedFollowUp: z.enum(['Today', 'Tomorrow', 'In 2 days', 'In 1 week']).optional().nullable(),
   summary: z.string(),
 });
 
@@ -54,9 +54,9 @@ Follow this schema strictly:
 - issueDescription: string (the exact problem)
 - source: enum ('PHONE', 'WEBSITE', 'TEXT', 'REFERRAL', 'REPEAT_CUSTOMER', 'MANUAL')
 - urgency: enum ('LOW', 'MEDIUM', 'HIGH', 'EMERGENCY') (If food is at risk or it's a walk-in freezer failure, it's EMERGENCY or HIGH)
-- estimatedValue: number (estimate based on typical repair costs if obvious, else null)
+- estimatedValue: number (If the customer explicitly gives a value, return it. Otherwise return null. Do NOT confidently invent a repair price from vague text.)
 - requestedTime: string (e.g., "tomorrow morning")
-- suggestedFollowUp: enum ('Today', 'Tomorrow', 'Next Week')
+- suggestedFollowUp: enum ('Today', 'Tomorrow', 'In 2 days', 'In 1 week')
 - summary: string (1-2 sentence summary of the issue)`
         },
         {

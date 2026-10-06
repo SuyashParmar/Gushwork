@@ -17,7 +17,7 @@ export async function GET() {
     let openPipelineValue = 0;
     
     activeJobs.forEach(job => {
-      const followUpStatus = getFollowUpStatus(job.nextFollowUpAt);
+      const followUpStatus = getFollowUpStatus(job).status;
       if (followUpStatus === 'TODAY') followUpsToday++;
       if (followUpStatus === 'OVERDUE') overdueFollowUps++;
       

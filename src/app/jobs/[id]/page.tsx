@@ -9,31 +9,22 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
-import { Phone, Mail, User, Clock, Briefcase, FileText, CalendarDays, History } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { MarkContactedDialog } from '@/components/jobs/MarkContactedDialog';
 
 export default function JobDetailPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const id = params.id as string;
   const showContactDialogInit = searchParams.get('action') === 'contact';
-  
   const [job, setJob] = useState<any>(null);
   const [activities, setActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
   const [contactDialogOpen, setContactDialogOpen] = useState(showContactDialogInit);
-  const [contactMethod, setContactMethod] = useState('CALL');
-  const [contactNotes, setContactNotes] = useState('');
-  const [nextFollowUp, setNextFollowUp] = useState('');
 
   useEffect(() => {
-    // default next follow up to 2 days from now
-    const d = new Date();
-    d.setDate(d.getDate() + 2);
-    setNextFollowUp(d.toISOString().split('T')[0]);
-    
     fetchJobDetails();
   }, [id]);
 
@@ -54,30 +45,9 @@ export default function JobDetailPage() {
       setLoading(false);
     }
   }
-
-  async function handleMarkContacted() {
-    try {
-      const res = await fetch(`/api/jobs/${id}/contact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contactMethod,
-          notes: contactNotes,
-          nextFollowUp: new Date(nextFollowUp).toISOString()
-        })
-      });
-      
-      const data = await res.json();
-      if (!data.success) throw new Error(data.error);
-      
-      toast.success('Follow-up recorded successfully');
-      setContactDialogOpen(false);
-      setContactNotes('');
-      fetchJobDetails(); // reload
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to record contact');
-    }
-  }
+  const handleContactSuccess = () => {
+    fetchJobDetails();
+  };
 
   async function updateStatus(newStatus: string) {
     try {
@@ -106,19 +76,34 @@ export default function JobDetailPage() {
         <div>
           <div className="flex items-center gap-3 mb-2">
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">{job.companyName}</h1>
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-sm px-2 py-1">
               {job.status.replace(/_/g, ' ')}
             </Badge>
-            {job.urgency === 'EMERGENCY' && (
-              <Badge variant="destructive">EMERGENCY</Badge>
+            {job.priorityInfo && (
+              <Badge variant="outline" className={`text-sm px-2 py-1 font-semibold ${
+                job.calculatedPriority >= 80 ? 'bg-red-100 text-red-800 border-red-200' :
+                job.calculatedPriority >= 60 ? 'bg-orange-100 text-orange-800 border-orange-200' :
+                job.calculatedPriority >= 40 ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
+                'bg-slate-100 text-slate-800 border-slate-200'
+              }`}>
+                {job.priorityInfo.label} PRIORITY
+              </Badge>
             )}
           </div>
           <p className="text-xl text-slate-600">{job.serviceType}</p>
+          {job.priorityInfo && (
+            <p className="text-sm text-slate-500 mt-1">Priority reasoning: {job.priorityInfo.reason}</p>
+          )}
         </div>
         
         <div className="flex gap-2 flex-wrap">
+          <a href={`tel:${job.phone}`}>
+            <Button variant="outline" className="border-green-200 text-green-700 hover:bg-green-50 hover:text-green-800">
+              Call
+            </Button>
+          </a>
           <Button onClick={() => setContactDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
-            <Phone className="h-4 w-4 mr-2" /> Mark Contacted
+             Mark Contacted
           </Button>
           <Select value={job.status} onValueChange={updateStatus}>
             <SelectTrigger className="w-[180px]">
@@ -145,6 +130,18 @@ export default function JobDetailPage() {
               <CardTitle>Job Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {job.nextAction && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-2">
+                  <h4 className="text-xs font-bold text-blue-600 tracking-wider uppercase mb-1">Next Action</h4>
+                  <p className="text-blue-900 font-semibold text-lg">{job.nextAction}</p>
+                  {job.nextFollowUpAt && (
+                    <p className="text-blue-800/80 text-sm mt-1 flex items-center gap-1">
+                      Due: {format(new Date(job.nextFollowUpAt), 'MMM d, yyyy')}
+                    </p>
+                  )}
+                </div>
+              )}
+              
               <div>
                 <h4 className="text-sm font-medium text-slate-500 mb-1">Issue Description</h4>
                 <p className="text-slate-900">{job.issueDescription}</p>
@@ -246,53 +243,12 @@ export default function JobDetailPage() {
           </Card>
         </div>
       </div>
-
-      <Dialog open={contactDialogOpen} onOpenChange={setContactDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Mark Contacted</DialogTitle>
-            <DialogDescription>
-              Record a follow-up interaction and schedule the next touchpoint.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Method</label>
-              <Select value={contactMethod} onValueChange={(v) => setContactMethod(v || 'CALL')}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="CALL">Phone Call</SelectItem>
-                  <SelectItem value="SMS">Text Message</SelectItem>
-                  <SelectItem value="EMAIL">Email</SelectItem>
-                  <SelectItem value="NOTE">Left Note</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Notes (optional)</label>
-              <Textarea 
-                placeholder="Spoke with Mike. Reviewing quote with manager." 
-                value={contactNotes}
-                onChange={(e) => setContactNotes(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Next Follow-Up Date</label>
-              <Input 
-                type="date" 
-                value={nextFollowUp}
-                onChange={(e) => setNextFollowUp(e.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setContactDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleMarkContacted} className="bg-blue-600 hover:bg-blue-700">Save</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <MarkContactedDialog 
+        jobId={id} 
+        isOpen={contactDialogOpen} 
+        onClose={() => setContactDialogOpen(false)} 
+        onSuccess={handleContactSuccess}
+      />
     </div>
   );
 }

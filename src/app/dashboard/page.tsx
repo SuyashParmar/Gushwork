@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Briefcase, Clock, FileText, CheckCircle2, AlertCircle, Phone, ArrowRight, BrainCircuit } from 'lucide-react';
 import Link from 'next/link';
+import { MarkContactedDialog } from '@/components/jobs/MarkContactedDialog';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null);
@@ -13,16 +14,9 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [aiSummary, setAiSummary] = useState<string>('');
   const [aiLoading, setAiLoading] = useState(true);
+  const [contactJobId, setContactJobId] = useState<string | null>(null);
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  };
-
-  useEffect(() => {
-    async function loadData() {
+  const loadData = useCallback(async () => {
       try {
         const [statsRes, followUpsRes] = await Promise.all([
           fetch('/api/dashboard/stats'),
@@ -45,19 +39,8 @@ export default function DashboardPage() {
         // Remove duplicates if any (shouldn't be, but just in case)
         const unique = Array.from(new Map(combined.map(item => [item._id, item])).values());
         
-        // Calculate priority locally or server side? 
-        // We'll just map urgency and status to basic priority for the dashboard
-        const prioritized = unique.map(job => {
-          let score = 0;
-          if (job.urgency === 'EMERGENCY') score += 40;
-          if (job.urgency === 'HIGH') score += 25;
-          if (job.estimatedValue >= 2000) score += 15;
-          // if overdue
-          const followUpDate = new Date(job.nextFollowUpAt);
-          if (followUpDate < new Date(new Date().setHours(0,0,0,0))) score += 30;
-          
-          return { ...job, calculatedPriority: score };
-        }).sort((a, b) => b.calculatedPriority - a.calculatedPriority);
+        // Priority is already calculated and returned by the APIs
+        const prioritized = unique.sort((a, b) => b.calculatedPriority - a.calculatedPriority);
         
         setFollowUps(prioritized);
         setLoading(false);
@@ -78,10 +61,18 @@ export default function DashboardPage() {
         setLoading(false);
         setAiLoading(false);
       }
-    }
+    }, []);
     
+  useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
 
   if (loading) {
     return (
@@ -169,7 +160,7 @@ export default function DashboardPage() {
 
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-slate-900">Today's Follow-Ups</h2>
+          <h2 className="text-xl font-semibold text-slate-900">Needs Your Attention</h2>
           <Link href="/follow-ups" className="text-sm text-blue-600 font-medium hover:underline flex items-center gap-1">
             View all <ArrowRight className="h-4 w-4" />
           </Link>
@@ -217,25 +208,33 @@ export default function DashboardPage() {
                           <p className="text-slate-600 mt-1">{job.serviceType} • {job.issueDescription}</p>
                         </div>
                         
-                        <div className="flex items-center gap-4 text-sm text-slate-500">
+                        <div className="flex items-center gap-4 text-sm text-slate-500 mb-2">
                           <span className="flex items-center gap-1"><Phone className="h-3.5 w-3.5" /> {job.phone}</span>
                           <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> 
                             {job.lastContactedAt ? `Last contacted ${new Date(job.lastContactedAt).toLocaleDateString()}` : 'Never contacted'}
                           </span>
                         </div>
+                        {job.nextAction && (
+                          <div className="text-sm font-medium bg-blue-50 text-blue-800 px-3 py-1.5 rounded-md inline-block border border-blue-100">
+                            Action: {job.nextAction}
+                          </div>
+                        )}
                       </div>
                       
-                      <div className="flex flex-row md:flex-col gap-2 w-full md:w-auto">
+                      <div className="flex flex-col gap-2 w-full md:w-auto">
+                        <Link href={`tel:${job.phone}`} className="flex-1 md:w-40">
+                          <Button variant="outline" className="w-full border-green-200 text-green-700 hover:bg-green-50 hover:text-green-800">
+                            Call
+                          </Button>
+                        </Link>
                         <Link href={`/jobs/${job._id}`} className="flex-1 md:w-40">
                           <Button className="w-full bg-blue-600 hover:bg-blue-700">
                             View Job
                           </Button>
                         </Link>
-                        <Link href={`/jobs/${job._id}?action=contact`} className="flex-1 md:w-40">
-                          <Button variant="outline" className="w-full">
-                            Mark Contacted
-                          </Button>
-                        </Link>
+                        <Button variant="outline" className="flex-1 md:w-40" onClick={() => setContactJobId(job._id)}>
+                          Mark Contacted
+                        </Button>
                       </div>
                     </div>
                   </CardContent>
@@ -245,6 +244,13 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+
+      <MarkContactedDialog 
+        jobId={contactJobId} 
+        isOpen={!!contactJobId} 
+        onClose={() => setContactJobId(null)} 
+        onSuccess={loadData}
+      />
     </div>
   );
 }
