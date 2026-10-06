@@ -37,13 +37,20 @@ export async function PUT(
       return NextResponse.json({ success: false, error: 'Job not found' }, { status: 404 });
     }
     
-    // Only transition status if status is provided and actually changed
-    if (body.status && body.status !== job.status) {
-      await transitionJobStatus(job, body.status);
-    } else if (Object.keys(body).length > 0) {
-       // if we are updating other fields
-       Object.assign(job, body);
-       await job.save();
+    if (Object.keys(body).length > 0) {
+      const oldStatus = job.status;
+      
+      // If status is changing, do the transition logic
+      if (body.status && body.status !== oldStatus) {
+        // Assign other fields first (like assignedTechnician)
+        const { status, ...rest } = body;
+        Object.assign(job, rest);
+        
+        await transitionJobStatus(job, body.status);
+      } else {
+        Object.assign(job, body);
+        await job.save();
+      }
     }
     
     return NextResponse.json({ success: true, data: job });

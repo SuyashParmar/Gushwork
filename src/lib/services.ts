@@ -143,10 +143,10 @@ export async function transitionJobStatus(job: IJob, newStatus: string, now: Dat
   const defaultFollowUp = getDefaultNextFollowUp(newStatus, now);
   job.nextFollowUpAt = defaultFollowUp ? defaultFollowUp : undefined;
 
-  if (newStatus === 'QUOTE_SENT') job.quoteSentAt = now;
-  else if (newStatus === 'APPROVED') job.approvedAt = now;
-  else if (newStatus === 'SCHEDULED') job.scheduledAt = now;
-  else if (newStatus === 'COMPLETED') job.completedAt = now;
+  if (newStatus === 'QUOTE_SENT' && !job.quoteSentAt) job.quoteSentAt = now;
+  else if (newStatus === 'APPROVED' && !job.approvedAt) job.approvedAt = now;
+  else if (newStatus === 'SCHEDULED' && !job.scheduledAt) job.scheduledAt = now;
+  else if (newStatus === 'COMPLETED' && !job.completedAt) job.completedAt = now;
   
   if (newStatus === 'COMPLETED' || newStatus === 'LOST') {
       job.nextFollowUpAt = undefined;

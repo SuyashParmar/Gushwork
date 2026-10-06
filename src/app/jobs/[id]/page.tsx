@@ -184,6 +184,24 @@ export default function JobDetailPage() {
                     <p className="text-slate-900 font-medium text-blue-700">{format(new Date(job.scheduledAt), 'MMM d, yyyy h:mm a')}</p>
                   </div>
                 )}
+                {job.quoteSentAt && (
+                  <div>
+                    <h4 className="text-sm font-medium text-slate-500 mb-1">Quote Sent On</h4>
+                    <p className="text-slate-900">{format(new Date(job.quoteSentAt), 'MMM d, yyyy h:mm a')}</p>
+                  </div>
+                )}
+                {job.approvedAt && (
+                  <div>
+                    <h4 className="text-sm font-medium text-slate-500 mb-1">Approved On</h4>
+                    <p className="text-slate-900">{format(new Date(job.approvedAt), 'MMM d, yyyy h:mm a')}</p>
+                  </div>
+                )}
+                {job.completedAt && (
+                  <div>
+                    <h4 className="text-sm font-medium text-slate-500 mb-1">Completed On</h4>
+                    <p className="text-slate-900 font-medium text-emerald-700">{format(new Date(job.completedAt), 'MMM d, yyyy h:mm a')}</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
