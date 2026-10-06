@@ -1,6 +1,12 @@
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
+// Import all models to ensure they are registered in serverless functions
+import '@/models/Customer';
+import '@/models/Job';
+import '@/models/Activity';
+import '@/models/Technician';
+
 let MONGODB_URI = process.env.MONGODB_URI;
 
 /**
