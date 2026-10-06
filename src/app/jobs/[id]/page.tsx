@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { MarkContactedDialog } from '@/components/jobs/MarkContactedDialog';
+import { ScheduleDialog } from '@/components/jobs/ScheduleDialog';
 import { User, Phone, Mail, History } from 'lucide-react';
 
 export default function JobDetailPage() {
@@ -25,9 +26,6 @@ export default function JobDetailPage() {
   
   const [contactDialogOpen, setContactDialogOpen] = useState(showContactDialogInit);
   const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
-  const [scheduleTime, setScheduleTime] = useState('');
-  const [techName, setTechName] = useState('');
-  const [techPhone, setTechPhone] = useState('');
 
   useEffect(() => {
     fetchJobDetails();
@@ -72,36 +70,6 @@ export default function JobDetailPage() {
       }
     } catch (error) {
       toast.error('Failed to update status');
-    }
-  }
-
-  async function handleSchedule() {
-    if (!scheduleTime || !techName) {
-      toast.error('Please provide a time and a technician name');
-      return;
-    }
-    
-    try {
-      const res = await fetch(`/api/jobs/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          status: 'SCHEDULED',
-          scheduledAt: new Date(scheduleTime).toISOString(),
-          assignedTechnician: techName,
-          assignedTechnicianPhone: techPhone || undefined
-        })
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success('Job scheduled successfully');
-        setScheduleDialogOpen(false);
-        fetchJobDetails();
-      } else {
-        throw new Error(data.error);
-      }
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to schedule job');
     }
   }
 
@@ -303,46 +271,12 @@ export default function JobDetailPage() {
         onSuccess={handleContactSuccess}
       />
 
-      <Dialog open={scheduleDialogOpen} onOpenChange={setScheduleDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Schedule Job</DialogTitle>
-            <DialogDescription>
-              Book a time and assign a technician for this repair.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Scheduled Date & Time *</label>
-              <Input 
-                type="datetime-local" 
-                value={scheduleTime}
-                onChange={(e) => setScheduleTime(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Technician Name *</label>
-              <Input 
-                placeholder="e.g. Alex" 
-                value={techName}
-                onChange={(e) => setTechName(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Technician Phone Number</label>
-              <Input 
-                placeholder="e.g. 555-1234" 
-                value={techPhone}
-                onChange={(e) => setTechPhone(e.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setScheduleDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleSchedule} className="bg-blue-600 hover:bg-blue-700">Confirm Schedule</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ScheduleDialog 
+        jobId={id}
+        isOpen={scheduleDialogOpen}
+        onClose={() => setScheduleDialogOpen(false)}
+        onSuccess={fetchJobDetails}
+      />
     </div>
   );
 }

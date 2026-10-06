@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Phone, Clock, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { ScheduleDialog } from '@/components/jobs/ScheduleDialog';
 
 const STAGES = [
   'NEW',
@@ -31,6 +32,9 @@ const STAGE_LABELS: Record<string, string> = {
 export default function JobsPipelinePage() {
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchJobs();
@@ -51,6 +55,12 @@ export default function JobsPipelinePage() {
   }
 
   async function moveJob(jobId: string, newStatus: string) {
+    if (newStatus === 'SCHEDULED') {
+      setSelectedJobId(jobId);
+      setScheduleDialogOpen(true);
+      return;
+    }
+
     const originalJobs = [...jobs];
     // Optimistic update
     setJobs(jobs.map(j => j._id === jobId ? { ...j, status: newStatus } : j));
@@ -179,6 +189,19 @@ export default function JobsPipelinePage() {
           })}
         </div>
       </div>
+      
+      <ScheduleDialog 
+        jobId={selectedJobId}
+        isOpen={scheduleDialogOpen}
+        onClose={() => {
+          setScheduleDialogOpen(false);
+          setSelectedJobId(null);
+        }}
+        onSuccess={() => {
+          // Re-fetch jobs to show updated status
+          fetchJobs();
+        }}
+      />
     </div>
   );
 }
