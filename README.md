@@ -70,8 +70,3 @@ When seeded correctly, the application will highlight these core demo states:
 4. **View Job Details**: View a job to see priority reasoning, contact history, and a full chronological activity timeline.
 5. **AI Intake**: Go to "AI Intake" and paste: *"Hi, this is Mike from Tony's Pizza. Our walk-in freezer has been warm since last night and we're losing food. Can someone come tomorrow morning? You can reach me at 555-1234."*
 6. **Review AI Output**: See the AI correctly parse the urgency as EMERGENCY and extract all relevant details, then create the job and assign a default follow-up action.
-
-## Future Improvements
-- Gmail/Twilio ingestion for automatic lead creation.
-- Technician scheduling and calendar integration.
-- Automated quote generation.
